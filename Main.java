@@ -22,15 +22,37 @@ public class Main {
         deck.dealCard(table);
         // create scanner
         Scanner scan = new Scanner(System.in);
-        // player 1 choice
-        System.out.println("Your cards: " + player1);
-        System.out.println("Top card: " + table.topCard());
-        System.out.print("Your choice: ");
-        int choice = scan.nextInt();
-        player1.play(player1.getHand().get(choice - 1), table.topCard());
-        // player 1 plays
-        // player 2 plays
-        // player 1 picks up
-
+        while (true) {
+            // player 1 choice
+            System.out.println("Player 1: 0- pick up, " + player1);
+            System.out.println("Top card: " + table.topCard());
+            System.out.print("Your choice: ");
+            // player 1 plays
+            int choice = scan.nextInt();
+            if (choice == 0) {
+                deck.dealCard(player1);
+            } else {
+                player1.play(player1.getHand().get(choice - 1), table);
+            }
+            if (player1.getHand().size() == 0) {
+                System.out.println("Player 1 wins!");
+                break;
+            }
+            // player 2 choice
+            System.out.println("Player 2: 0- pick up, " + player2);
+            System.out.println("Top card: " + table.topCard());
+            System.out.print("Your choice: ");
+            // player 2 plays
+            choice = scan.nextInt();
+            if (choice == 0) {
+                deck.dealCard(player2);
+            } else {
+                player2.play(player2.getHand().get(choice - 1), table);
+            }
+            if (player2.getHand().size() == 0) {
+                System.out.println("Player 2 wins!");
+                break;
+            }
+        }
     }
 }

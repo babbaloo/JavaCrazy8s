@@ -37,6 +37,28 @@ public class Card {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (this.getClass() != obj.getClass()) {
+            return false;
+        }
+        Card card = (Card) obj;
+        if (this.getSuit() == card.getSuit()) {
+            if (this.getValue() == card.getValue()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
+    @Override
     public String toString() {
         return number + " of " + suit;
     }
