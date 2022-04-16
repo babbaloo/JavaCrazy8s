@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Random;
 
 public class Deck {
@@ -19,15 +20,7 @@ public class Deck {
     }
 
     public void shuffle() {
-        Random random = new Random();
-
-        for (int i = 0; i < deck.size(); i++) {
-            int r = i + random.nextInt(deck.size() - i);
-            Card temp = deck.get(r);
-            deck.set(r, deck.get(i));
-            deck.set(i, temp);
-        }
-
+        Collections.shuffle(deck);
     }
 
     public void dealCard(Hand player) {

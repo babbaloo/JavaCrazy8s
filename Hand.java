@@ -22,26 +22,26 @@ public class Hand {
             }
         }
     }
-
+    // this method created to follow the face up card in the table instance of Hand
     public Card topCard() {
         return hand.get(hand.size() - 1);
     }
 
-    public void play(Card choice, Hand table) {
-        if (choice.getValue() == 8) {
+    public void play(Card playerChoice, Hand table) {
+        if (playerChoice.getValue() == 8) {
             System.out.println("You played 8");
-            table.pickUp(choice);
-            this.remove(choice);
+            table.pickUp(playerChoice);
+            this.remove(playerChoice);
             return;
-        } else if (choice.getValue() == table.topCard().getValue()) {
-            System.out.println("You played " + choice.getValue());
-            table.pickUp(choice);
-            this.remove(choice);
+        } else if (playerChoice.getValue() == table.topCard().getValue()) {
+            System.out.println("You played " + playerChoice.getValue());
+            table.pickUp(playerChoice);
+            this.remove(playerChoice);
             return;
-        } else if (choice.getSuit() == table.topCard().getSuit()) {
-            System.out.println("You played " + choice.getSuit());
-            table.pickUp(choice);
-            this.remove(choice);
+        } else if (playerChoice.getSuit() == table.topCard().getSuit()) {
+            System.out.println("You played " + playerChoice.getSuit());
+            table.pickUp(playerChoice);
+            this.remove(playerChoice);
             return;
         }
         System.out.println("You can't play that card.");
@@ -49,11 +49,16 @@ public class Hand {
 
     @Override
     public String toString() {
-        String string = "";
-        for (int i = 0; i < hand.size() - 1; i++) {
-            string += (i + 1) + "- " + hand.get(i).toString() + ", ";
+        // check if Hand contains Card or else IndexOutOfBounds occurs when another method blindly calls
+        while(!hand.isEmpty()) {
+            // prints [index + 1]- [Card in Hand], | e.g. 2- Queen of Diamonds, |
+            String string = "";
+            for (int i = 0; i < hand.size() - 1; i++) {
+                string += (i + 1) + "- " + hand.get(i).toString() + ", ";
+            }
+            string += hand.size() + "- " + hand.get(hand.size() - 1).toString();
+            return string;
         }
-        string += hand.size() + "- " + hand.get(hand.size() - 1).toString();
-        return string;
+        return "Your hand is empty!";
     }
 }
