@@ -34,6 +34,7 @@ public class GameEngine {
             if (turnCounter == gamePlayer.size()) {
                 turnCounter = 0;
             }
+
             // show current player hand, face up card, and ask for choice
             System.out.println("Player " + (turnCounter + 1) + ": 0- pick up, " + gamePlayer.get(turnCounter));
             System.out.println("Top card: " + table.topCard());
@@ -51,58 +52,60 @@ public class GameEngine {
                 turnCounter++;
                 continue;
             }
+//            create local variable to store currently played card
+            Card cardPlayed = gamePlayer.get(turnCounter).getHand().get(playerChoice - 1);
             //check card for 8, ask for suit
-            if (gamePlayer.get(turnCounter).getHand().get(playerChoice - 1).getValue() == 8) {
-                System.out.println("You played " + gamePlayer.get(turnCounter).getHand().get(playerChoice - 1));
+            if (cardPlayed.getValue() == 8) {
+                System.out.println("You played " + cardPlayed);
 //                choose suit and define inside suit variable to save for the next player turn
                 System.out.print("Choose your suit: ");
                 suit = scan.next();
-                table.pickUp(gamePlayer.get(turnCounter).getHand().get(playerChoice - 1));
-                gamePlayer.get(turnCounter).remove(gamePlayer.get(turnCounter).getHand().get(playerChoice - 1));
+                table.pickUp(cardPlayed);
+                gamePlayer.get(turnCounter).remove(cardPlayed);
                 turnCounter++;
                 continue;
             }
             //check card for same value
-            if (gamePlayer.get(turnCounter).getHand().get(playerChoice - 1).getValue() == table.topCard().getValue()) {
-                System.out.println("You played " + gamePlayer.get(turnCounter).getHand().get(playerChoice - 1));
+            if (cardPlayed.getValue() == table.topCard().getValue()) {
+                System.out.println("You played " + cardPlayed);
                 // check if 2
-                if (gamePlayer.get(turnCounter).getHand().get(playerChoice - 1).getValue() == 2) {
+                if (cardPlayed.getValue() == 2) {
                     System.out.println("You played 2");
                 }
                 // check if Q of S
-                if (gamePlayer.get(turnCounter).getHand().get(playerChoice - 1).getValue() == 12 && gamePlayer.get(turnCounter).getHand().get(playerChoice - 1).getSuit().equals("Spades")) {
-                    System.out.println("You played Queen of Spades");
+                if (cardPlayed.getValue() == 12 && cardPlayed.getSuit().equals("Spades")) {
+                    System.out.println("You played Q of S");
                 }
                 // check if J
-                if (gamePlayer.get(turnCounter).getHand().get(playerChoice - 1).getValue() == 11) {
+                if (cardPlayed.getValue() == 11) {
                     System.out.println("You played Jack");
                 }
-                table.pickUp(gamePlayer.get(turnCounter).getHand().get(playerChoice - 1));
+                table.pickUp(cardPlayed);
 //                reset suit variable no 8 was played
                 suit = table.topCard().getSuit();
-                gamePlayer.get(turnCounter).remove(gamePlayer.get(turnCounter).getHand().get(playerChoice - 1));
+                gamePlayer.get(turnCounter).remove(cardPlayed);
                 turnCounter++;
                 continue;
             }
             // check card for same suit
-            if (gamePlayer.get(turnCounter).getHand().get(playerChoice - 1).getSuit().equals(suit)) {
-                System.out.println("You played " + gamePlayer.get(turnCounter).getHand().get(playerChoice - 1));
+            if (cardPlayed.getSuit().equals(suit)) {
+                System.out.println("You played " + cardPlayed);
                 // check if 2
-                if (gamePlayer.get(turnCounter).getHand().get(playerChoice - 1).getValue() == 2) {
+                if (cardPlayed.getValue() == 2) {
                     System.out.println("You played 2");
                 }
                 // check if Q of S
-                if (gamePlayer.get(turnCounter).getHand().get(playerChoice - 1).getValue() == 12 && gamePlayer.get(turnCounter).getHand().get(playerChoice - 1).getSuit().equals("Spades")) {
-                    System.out.println("You played Queen of Spades");
+                if (cardPlayed.getValue() == 12 && cardPlayed.getSuit().equals("Spades")) {
+                    System.out.println("You played Q of S");
                 }
                 // check if J
-                if (gamePlayer.get(turnCounter).getHand().get(playerChoice - 1).getValue() == 11) {
+                if (cardPlayed.getValue() == 11) {
                     System.out.println("You played Jack");
                 }
-                table.pickUp(gamePlayer.get(turnCounter).getHand().get(playerChoice - 1));
+                table.pickUp(cardPlayed);
                 // reset suit variable no 8 was played
                 suit = table.topCard().getSuit();
-                gamePlayer.get(turnCounter).remove(gamePlayer.get(turnCounter).getHand().get(playerChoice - 1));
+                gamePlayer.get(turnCounter).remove(cardPlayed);
                 turnCounter++;
                 continue;
             }

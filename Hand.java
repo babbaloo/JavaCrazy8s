@@ -16,9 +16,11 @@ public class Hand {
     }
 
     public void remove(Card card) {
-        for (int i = 0; i < hand.size(); i++) {
-            if (hand.get(i).equals(card)) {
-                hand.remove(i);
+        if (!hand.isEmpty()) {
+            for (int i = 0; i < hand.size(); i++) {
+                if (hand.get(i).equals(card)) {
+                    hand.remove(i);
+                }
             }
         }
     }
@@ -30,7 +32,7 @@ public class Hand {
     @Override
     public String toString() {
         // check if Hand contains Card or else IndexOutOfBounds occurs when another method blindly calls
-        while(!hand.isEmpty()) {
+        if(!hand.isEmpty()) {
             // prints [index + 1]- [Card in Hand], | e.g. 2- Queen of Diamonds, |
             String string = "";
             for (int i = 0; i < hand.size() - 1; i++) {
