@@ -24,8 +24,10 @@ public class Deck {
     }
 
     public void dealCard(Hand player) {
-        player.pickUp(deck.get(deck.size() - 1));
-        deck.remove(deck.size() - 1);
+        if (!deck.isEmpty()) {
+            player.pickUp(deck.get(deck.size() - 1));
+            deck.remove(deck.size() - 1);
+        }
     }
 
     public void dealCards(Hand player, int n) {
