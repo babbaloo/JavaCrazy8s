@@ -1,6 +1,4 @@
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Scanner;
+import java.util.*;
 // try linkedHashMap?
 
 public class GameEngine {
@@ -8,6 +6,7 @@ public class GameEngine {
     private Deck deck;
     private Hand table;
     private Scanner scan;
+    private String suit;
 
     public GameEngine(Scanner scan, Deck deck, int players) {
         this.scan = scan;
@@ -25,22 +24,62 @@ public class GameEngine {
     public void play() {
         // flip over top card
         deck.dealCard(table);
+        // create changing suit variable in order to save chosen suit when an 8 is played
+        suit = table.topCard().getSuit();
         // create a loop and counter for player play in order
         int turnCounter = 0;
-//        create changing suit variable in order to save chosen suit when an 8 is played
-        String suit = table.topCard().getSuit();
         while (!winner()) {
-            // increases counter and resets at player 0 once all players have played
+            // resets counter to player 0 once all players have played
             if (turnCounter == gamePlayer.size()) {
                 turnCounter = 0;
             }
-
-            // show current player hand, face up card, and ask for choice
+            // show current player hand, face up card, suit(to keep the chosen suit in case of 8) and ask for player choice
             System.out.println("Player " + (turnCounter + 1) + ": 0- pick up, " + gamePlayer.get(turnCounter));
             System.out.println("Top card: " + table.topCard());
             System.out.println("Suit: " + suit);
             System.out.print("Your choice: ");
-            int playerChoice = Integer.parseInt(scan.next());
+//            store scanner input in a String, separate at commas for multiple cards, store in String array
+//            lines 42 - 80 are for multiple card playing ability
+            String input = scan.next();
+            if (input.contains(",")) {
+                String[] choices = input.split(",");
+                System.out.println(Arrays.toString(choices));
+                // check that card suit matches face up suit card or value matches value
+                if (gamePlayer.get(turnCounter).getHand().get(Integer.parseInt(choices[0]) - 1).getSuit().equals(suit) || gamePlayer.get(turnCounter).getHand().get(Integer.parseInt(choices[0]) - 1).getValue() == table.topCard().getValue()) {
+//                    iterate through array to make sure all cards are the same value
+                    boolean valuesMatchCheck = true;
+                    for (String each : choices) {
+                        int comparator = gamePlayer.get(turnCounter).getHand().get(Integer.parseInt(choices[0]) - 1).getValue();
+                        if (gamePlayer.get(turnCounter).getHand().get(Integer.parseInt(each) - 1).getValue() != comparator) {
+                            System.out.println("You can't play those cards!");
+                            valuesMatchCheck = false;
+                            continue;
+                        }
+                    }
+                    // get and play each card -> add to table Hand and remove from player Hand
+                    if (valuesMatchCheck) {
+//                        create a register of cards to be removed. Can't remove yet cause subsequent iterations have changed indices due to deletion
+                        int[] register = new int[choices.length];
+                        for (int i = 0; i < choices.length; i++) {
+                            int each = Integer.parseInt(choices[i]);
+                            table.pickUp(gamePlayer.get(turnCounter).getHand().get(each - 1));
+                            register[i] = each;
+                        }
+//                        create null entries where played Cards were in order to not get off by 1 errors when deleting lower indexed elements
+                        for (int each : register) {
+                            gamePlayer.get(turnCounter).getHand().set((each - 1), null);
+                        }
+//                        remove null entries from player Hand ArrayList
+                        gamePlayer.get(turnCounter).getHand().removeAll(Collections.singleton(null));
+                        suit = table.topCard().getSuit();
+                        turnCounter++;
+                    }
+                } else {
+                    System.out.println("Suits don't match!");
+                }
+                continue;
+            }
+            int playerChoice = Integer.parseInt(input);
 //            reject choice if it's out of range
             if (playerChoice < 0 || playerChoice > gamePlayer.get(turnCounter).getHand().size()) {
                 System.out.println("Invalid choice");
@@ -52,67 +91,68 @@ public class GameEngine {
                 turnCounter++;
                 continue;
             }
-//            create local variable to store currently played card
+//            create local variable to store currently played card and reduce long method call chains
             Card cardPlayed = gamePlayer.get(turnCounter).getHand().get(playerChoice - 1);
             //check card for 8, ask for suit
             if (cardPlayed.getValue() == 8) {
-                System.out.println("You played " + cardPlayed);
-//                choose suit and define inside suit variable to save for the next player turn
-                System.out.print("Choose your suit: ");
-                suit = scan.next();
+                eight(cardPlayed);
                 table.pickUp(cardPlayed);
                 gamePlayer.get(turnCounter).remove(cardPlayed);
                 turnCounter++;
                 continue;
             }
-            //check card for same value
-            if (cardPlayed.getValue() == table.topCard().getValue()) {
-                System.out.println("You played " + cardPlayed);
-                // check if 2
-                if (cardPlayed.getValue() == 2) {
-                    System.out.println("You played 2");
-                }
-                // check if Q of S
-                if (cardPlayed.getValue() == 12 && cardPlayed.getSuit().equals("Spades")) {
-                    System.out.println("You played Q of S");
-                }
-                // check if J
-                if (cardPlayed.getValue() == 11) {
-                    System.out.println("You played Jack");
-                }
+            if (cardPlayed.getValue() == table.topCard().getValue() || cardPlayed.getSuit().equals(suit)) {
+                suit(cardPlayed);
                 table.pickUp(cardPlayed);
-//                reset suit variable no 8 was played
-                suit = table.topCard().getSuit();
                 gamePlayer.get(turnCounter).remove(cardPlayed);
                 turnCounter++;
                 continue;
             }
-            // check card for same suit
-            if (cardPlayed.getSuit().equals(suit)) {
-                System.out.println("You played " + cardPlayed);
-                // check if 2
-                if (cardPlayed.getValue() == 2) {
-                    System.out.println("You played 2");
-                }
-                // check if Q of S
-                if (cardPlayed.getValue() == 12 && cardPlayed.getSuit().equals("Spades")) {
-                    System.out.println("You played Q of S");
-                }
-                // check if J
-                if (cardPlayed.getValue() == 11) {
-                    System.out.println("You played Jack");
-                }
-                table.pickUp(cardPlayed);
-                // reset suit variable no 8 was played
-                suit = table.topCard().getSuit();
-                gamePlayer.get(turnCounter).remove(cardPlayed);
-                turnCounter++;
-                continue;
-            }
+
             // wrong card
             System.out.println("You can't play that card!");
         }
         System.out.println("Player " + turnCounter + " wins!");
+    }
+
+    public void eight(Card card) {
+        System.out.println("You played " + card);
+        // choose suit and define inside suit variable to save for the next player turn
+        System.out.print("Choose your suit: ");
+        suit = scan.next();
+    }
+
+    public void suit(Card card) {
+        switcher(card);
+        System.out.println("You played " + card);
+        suit = card.getSuit();
+    }
+
+    public void queenOfSpades(Card card) {
+
+    }
+
+    public void two(Card card) {
+
+    }
+
+    public void jack(Card card) {
+
+    }
+
+    public void switcher(Card card) {
+        switch(card.getValue()) {
+            case 2 :
+                two(card);
+                break;
+            case 11 :
+                jack(card);
+                break;
+            case 12 :
+                if (card.getSuit().equals("Spades")) {
+                    queenOfSpades(card);
+                }
+        }
     }
 
     public boolean winner() {
